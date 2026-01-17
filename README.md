@@ -1,16 +1,51 @@
-# React + Vite
+# PairCode
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Real-Time Collaborative Code Editor**
 
-Currently, two official plugins are available:
+PairCode is a real-time collaborative code editor built with React, Vite, Socket.IO and CodeMirror. Multiple users can join the same room via a shared link and code together in real time with language support and synchronized editing.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🧠 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🔄 Real-time code collaboration using WebSockets  
+- 👩‍💻 Code editor powered by CodeMirror  
+- 📍 Rooms identified by unique IDs  
+- 📌 Language selection (JavaScript & Java)  
+- 📲 Copy room link to share with peers  
+- 👤 Connected user list with live join/leave notifications  
+- 📡 Simple backend with Express & Socket.IO
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Jaykolate/PairCode.git
+cd PairCode
+├─ src/
+│   ├─ Components/
+│   │   ├─ Editor.jsx
+│   │   └─ Client.jsx
+│   ├─ App.css
+│   └─ main.jsx
+├─ server.js
+├─ Actions.js
+├─ vite.config.js
+├─ package.json
+└─ README.md
+
+
+💡 How It Works
+
+1.A user enters a room ID and username.
+
+2. Socket.IO connects the user to a room.
+
+3. On join, all other clients receive a JOINED event.
+
+4. Code changes emit CODE_CHANGE events.
+
+5. New users request the current code via SYNC_CODE.
