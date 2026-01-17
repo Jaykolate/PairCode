@@ -1,0 +1,209 @@
+
+.homePageWrapper{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: aliceblue;
+  height: 100vh;
+ 
+
+}
+
+.formWrapper{
+  display: flex;
+  flex-direction: column;
+
+  background-color: #282a36;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+
+
+}
+.image{
+  width: 200px;
+  height: 90px;
+  margin-bottom: 30px;
+ 
+}
+footer{
+  position: fixed;
+  bottom: 0;
+  color: aliceblue;
+}
+
+footer a{
+  color: #61dafb;
+  text-decoration: none;
+}
+
+.inputGroup{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.mainLabel{
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+.inputBox{
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  margin-bottom: 14px;
+  background-color: #eee;
+  font-weight: bold;
+  color: black;
+}
+
+.btn{
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+ 
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.joinBtn{
+  margin-top: 10px;
+  background-color: aquamarine;
+  width: 100px;
+  margin-left: auto;
+
+
+}
+.joinBtn:hover{
+  background-color: #5bc0d2;
+  color: white;
+}
+
+.createInfo{
+  margin: 0 auto;
+  margin-top: 20px;
+  
+}
+.createInfo a{
+  color: #61dafb;
+  text-decoration: none;
+  border-bottom: 1px solid #61dafb;
+  transition: all 0.3s ease-in-out;
+}
+
+.createInfo a:hover , footer a:hover{
+  color: #21a1f1;
+  border-bottom: 1px solid #21a1f1;
+}
+
+.mainWrap{
+  display:grid;
+  grid-template-columns: 230px 1fr;
+  
+}
+.aside{
+   background-color:#1c1e29 ;
+   padding:16px;
+   color:#fff;
+   display: flex;
+   flex-direction: column;
+
+}
+.asideinner{
+  flex:1;
+
+}
+
+.ClientList{
+  display:flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+
+
+}
+
+.client{
+  display: flex;
+
+  flex-direction: column;
+  align-items: center;  
+  font-weight: bold;
+}
+
+.userName{
+  margin-top: 10px;
+  font-size: small;
+}
+.logo{
+  border-bottom: 1px solid #44475a;
+  padding-bottom: 10px;
+
+}
+.logoImage{
+  
+  height: 60px;
+}
+.leave-btn{
+  background-color: #ff5555;
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 20px;
+}
+.leave-btn:hover{
+  background-color: #b53838;
+}
+
+.mainWrap .CodeMirror {
+  min-height: calc(100vh - 20px);
+  font-size: 18px;
+  line-height: 1.6;
+  padding-top: 20px;
+}
+
+.mainWrap .CodeMirror-scroll {
+  min-height: calc(100vh - 20px);
+}
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.copy-btn{
+  background-color: #fff;
+  border: none;
+  color: black;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.copy-btn:hover{
+  background-color: #eaecea;
+}
+.languageSelect{
+  margin-bottom: 20px;
+  font-size: 1rem;
+  background-color: #44475a;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+}
+.select-lang{
+  margin-bottom: 6px;
+}
