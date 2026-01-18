@@ -13,9 +13,10 @@ export default function EditorPage() {
   const location = useLocation();
 
   const socketRef = useRef(null);
-  const codeRef = useRef(null);
+  const codeRef = useRef("");
   const [language, setLanguage] = useState("javascript");
   const [clients, setClients] = useState([]);
+  const [output , setOutput] = useState("");
 
   useEffect(() => {
     if (!location.state) return;
@@ -37,17 +38,28 @@ export default function EditorPage() {
         username: location.state.username,
       });
 
-      socketRef.current.on(ACTIONS.JOINED, ({ clients, username,socketId }) => {
-        if (username !== location.state.username) {
-          toast.success(`${username} joined the room`);
-        }
-        setClients(clients);
-        socketRef.current.emit(ACTIONS.SYNC_CODE, {
-          code:codeRef.current,
-          socketId,
-        }
-        );
+      socketRef.current.on(ACTIONS.JOINED, ({ clients, username, socketId }) => {
+       setClients(clients);
+
+  // only first client syncs code
+  if (socketId !== socketRef.current.id && codeRef.current) {
+    socketRef.current.emit(ACTIONS.SYNC_CODE, {
+      socketId,
+      code: codeRef.current,
+      language,
+    });
+  }
+});
+
+       socketRef.current.on(ACTIONS.CODE_OUTPUT,({output,stderr})=>{
+        setOutput(output || stderr);
       });
+
+      socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, ({ language }) => {
+                setLanguage(language);
+            });
+
+
 
       socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
         toast(`${username} left the room`);
@@ -55,15 +67,41 @@ export default function EditorPage() {
           prev.filter((client) => client.socketId !== socketId)
         );
       });
+      
     };
 
     init();
 
     return () => {
       socketRef.current?.disconnect();
-      socketRef.current?.off();
+      
     };
   }, [location.state, roomId, navigate]);
+
+  const languageVersionMap={
+  javascript:"18.15.0",
+  java:"15.0.2",
+  python:"3.10.0",
+};
+
+const handelRunCode =()=>{
+  socketRef.current.emit(ACTIONS.COMPILE_CODE,{
+    roomId,
+    code:codeRef.current,
+    language,
+    version:languageVersionMap[language],
+  });
+};
+const handleLanguageChange = (e) => {
+    const newLang = e.target.value;
+    setLanguage(newLang); // Update local UI
+    
+    // Notify others
+    socketRef.current.emit(ACTIONS.LANGUAGE_CHANGE, {
+        roomId,
+        language: newLang,
+    });
+};
 
   if (!location.state) {
     return <Navigate to="/" />;
@@ -92,10 +130,11 @@ export default function EditorPage() {
         <select
           className="languageSelect"
           value={language}
-          onChange={(e) => setLanguage(e.target.value)}
+          onChange={handleLanguageChange}
         >
           <option value="javascript">JavaScript</option>
           <option value="java">Java</option>
+          <option value="python">python</option>
         </select>
 
         <button
@@ -124,6 +163,14 @@ export default function EditorPage() {
           onCodeChange={(code)=>{
             codeRef.current = code;
           }}
+        />
+        <button className="btn run-btn" onClick={handelRunCode}>
+            ▶ Run Code
+        </button>
+        <textarea className="outputBox"
+          value={output}
+          readOnly
+          placeholder="Output will appear here!"
         />
       </div>
     </div>

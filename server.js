@@ -3,7 +3,11 @@ import http from 'http';
 import { Server } from 'socket.io';
 import ACTIONS from './Actions.js';
 import path from 'path';
+import fetch from "node-fetch";
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 
@@ -49,9 +53,45 @@ io.on('connection', (socket) => {
     socket.in(roomId).emit(ACTIONS.CODE_CHANGE,{code});
   });
 
-  socket.on(ACTIONS.SYNC_CODE,({socketId,code})=>{
+  socket.on(ACTIONS.SYNC_CODE,({socketId,code,language})=>{
     io.to(socketId).emit(ACTIONS.CODE_CHANGE,{code});
+    io.to(socketId).emit(ACTIONS.LANGUAGE_CHANGE,{language});
   });
+
+  socket.on(ACTIONS.COMPILE_CODE,async({code,roomId,language,version})=>{
+  try{
+    const response =await fetch("https://emkc.org/api/v2/piston/execute",{
+       method:"POST",
+       headers:{
+        "Content-Type":"application/json",
+       },
+       body:JSON.stringify({
+        language,
+        version,
+        files:[{
+          content:code,
+        },
+      ],
+       }),
+    });
+
+    const result = await response.json();
+
+    io.to(roomId).emit(ACTIONS.CODE_OUTPUT,{
+      output:result.run.output,
+      stderr:result.run.stderr,
+    });
+  }catch(error){
+    io.to(roomId).emit(ACTIONS.CODE_OUTPUT,{
+      output:"",
+      stderr:"Error executing code",
+    });
+  }
+});
+
+socket.on(ACTIONS.LANGUAGE_CHANGE,({roomId,language})=>{
+  socket.in(roomId).emit(ACTIONS.LANGUAGE_CHANGE,{language});
+})
 
 
 
@@ -71,7 +111,7 @@ io.on('connection', (socket) => {
 
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
