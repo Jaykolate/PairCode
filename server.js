@@ -13,12 +13,12 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Vite frontend
+    origin: true, // Vite frontend
     methods: ["GET", "POST"],
   },
 });
-app.use(express.static('dist'));
-app.use((req,res,next) =>{
+app.use(express.static(path.join(__dirname, 'dist')));
+app.get("*" ,(req,res) =>{
   res.sendFile(path.join(__dirname,'dist','index.html'));
 
 })
@@ -35,6 +35,8 @@ function getAllConnectedClients(roomId) {
 }
 
 io.on('connection', (socket) => {
+  console.log("✅ Socket connected:", socket.id);
+
  
   socket.on(ACTIONS.JOIN,({roomId,username})=>{
         userSocketMap[socket.id]=username;
@@ -111,7 +113,7 @@ socket.on(ACTIONS.LANGUAGE_CHANGE,({roomId,language})=>{
 
 
 
-const PORT = process.env.PORT || 5001;
-server.listen(PORT, () => {
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Listening on port ${PORT}`);
 });

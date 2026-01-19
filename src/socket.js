@@ -1,12 +1,12 @@
-import {io} from 'socket.io-client';
+import { io } from "socket.io-client";
 
-export const initSocket =async()=>{
-    const options ={
+export const initSocket = async () => {
+  return io({
+    path: "/socket.io",
+    transports: ["websocket"],
+    secure: true,
     forceNew: true,
     reconnectionAttempts: Infinity,
-    timeout: 10000,
-    transports: ['websocket'],
-   
-};
- return io(import.meta.env.VITE_BACKEND_URL,options);
+    timeout: 20000,
+  });
 };
