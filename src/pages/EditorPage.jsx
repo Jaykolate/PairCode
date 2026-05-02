@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import Client from "../Components/Client.jsx";
 import Editor from "../Components/Editor.jsx";
+import ReviewPanel from "../Components/ReviewPanel.jsx";
+
 import { initSocket } from "../socket.js";
 import ACTIONS from "../../Actions.js";
 import { useLocation, useNavigate, Navigate, useParams } from "react-router-dom";
@@ -16,7 +18,13 @@ export default function EditorPage() {
   const codeRef = useRef("");
   const [language, setLanguage] = useState("javascript");
   const [clients, setClients] = useState([]);
-  const [output , setOutput] = useState("");
+  const [output, setOutput] = useState("");
+  const [reviewData, setReviewData] = useState(null);
+  const [isReviewLoading, setIsReviewLoading] = useState(false);
+  const [showReviewPanel, setShowReviewPanel] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+
 
   useEffect(() => {
     if (!location.state) return;
@@ -39,25 +47,25 @@ export default function EditorPage() {
       });
 
       socketRef.current.on(ACTIONS.JOINED, ({ clients, username, socketId }) => {
-       setClients(clients);
+        setClients(clients);
 
-  // only first client syncs code
-  if (socketId !== socketRef.current.id && codeRef.current) {
-    socketRef.current.emit(ACTIONS.SYNC_CODE, {
-      socketId,
-      code: codeRef.current,
-      language,
-    });
-  }
-});
+        // only first client syncs code
+        if (socketId !== socketRef.current.id && codeRef.current) {
+          socketRef.current.emit(ACTIONS.SYNC_CODE, {
+            socketId,
+            code: codeRef.current,
+            language,
+          });
+        }
+      });
 
-       socketRef.current.on(ACTIONS.CODE_OUTPUT,({output,stderr})=>{
+      socketRef.current.on(ACTIONS.CODE_OUTPUT, ({ output, stderr }) => {
         setOutput(output || stderr);
       });
 
       socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, ({ language }) => {
-                setLanguage(language);
-            });
+        setLanguage(language);
+      });
 
 
 
@@ -67,41 +75,72 @@ export default function EditorPage() {
           prev.filter((client) => client.socketId !== socketId)
         );
       });
-      
+
     };
 
     init();
 
     return () => {
       socketRef.current?.disconnect();
-      
+
     };
   }, [location.state, roomId, navigate]);
 
-  const languageVersionMap={
-  javascript:"18.15.0",
-  java:"15.0.2",
-  python:"3.10.0",
-};
+  const languageVersionMap = {
+    javascript: 63,
+    java: 62,
+    python: 71,
+  };
 
-const handelRunCode =()=>{
-  socketRef.current.emit(ACTIONS.COMPILE_CODE,{
-    roomId,
-    code:codeRef.current,
-    language,
-    version:languageVersionMap[language],
-  });
-};
-const handleLanguageChange = (e) => {
+  const handelRunCode = () => {
+    socketRef.current.emit(ACTIONS.COMPILE_CODE, {
+      roomId,
+      code: codeRef.current,
+      language,
+      version: languageVersionMap[language],
+    });
+  };
+  const handleLanguageChange = (e) => {
     const newLang = e.target.value;
     setLanguage(newLang); // Update local UI
-    
+
     // Notify others
     socketRef.current.emit(ACTIONS.LANGUAGE_CHANGE, {
-        roomId,
-        language: newLang,
+      roomId,
+      language: newLang,
     });
-};
+  };
+
+  const handleReview = async () => {
+    setShowReviewPanel(true);
+    setIsReviewLoading(true);
+    setReviewData(null);
+    try {
+      const baseUrl = import.meta.env.VITE_BACKEND_URL || "";
+      const response = await fetch(`${baseUrl}/api/review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: codeRef.current,
+          language
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch review');
+      }
+
+      const data = await response.json();
+      setReviewData(data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch code review");
+      setShowReviewPanel(false);
+    } finally {
+      setIsReviewLoading(false);
+    }
+  };
+
 
   if (!location.state) {
     return <Navigate to="/" />;
@@ -109,7 +148,15 @@ const handleLanguageChange = (e) => {
 
   return (
     <div className="mainWrap">
-      <div className="aside">
+      <div className="mobile-header">
+        <button className="hamburger-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          {isSidebarOpen ? '✖' : '☰'}
+        </button>
+        <span className="mobile-title">PairCode</span>
+      </div>
+
+      <div className={`aside ${isSidebarOpen ? 'open' : ''}`}>
+
         <div className="asideinner">
           <div className="logo">
             <img className="logoImage" src="/code.png" alt="logo" />
@@ -160,18 +207,31 @@ const handleLanguageChange = (e) => {
           socketRef={socketRef}
           roomId={roomId}
           language={language}
-          onCodeChange={(code)=>{
+          onCodeChange={(code) => {
             codeRef.current = code;
           }}
         />
-        <button className="btn run-btn" onClick={handelRunCode}>
+        <div className="btn-container">
+          <button className="btn run-btn" onClick={handelRunCode}>
             ▶ Run Code
-        </button>
+          </button>
+          <button className="btn ai-review-btn" onClick={handleReview} disabled={isReviewLoading}>
+            ⚡ AI Review
+          </button>
+        </div>
         <textarea className="outputBox"
           value={output}
           readOnly
           placeholder="Output will appear here!"
         />
+        {showReviewPanel && (
+          <ReviewPanel
+            review={reviewData}
+            isLoading={isReviewLoading}
+            onClose={() => setShowReviewPanel(false)}
+          />
+        )}
+
       </div>
     </div>
   );
