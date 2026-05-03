@@ -6,11 +6,20 @@ import path from 'path';
 import fetch from "node-fetch";
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
+import mongoose from 'mongoose';
 import reviewRouter from './routes/review.js';
+import authRouter from './routes/auth.js';
+import historyRouter from './routes/history.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/paircode')
+  .then(() => console.log('✅ MongoDB Connected'))
+  .catch((err) => console.error('MongoDB Connection Error:', err));
+
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -22,6 +31,8 @@ const io = new Server(server, {
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.json());
 app.use('/api/review', reviewRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/history', historyRouter);
 
 app.get(/^(?!\/socket\.io|^\/api\/).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));

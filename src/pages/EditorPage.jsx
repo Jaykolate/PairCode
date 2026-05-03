@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext.jsx";
 import Client from "../Components/Client.jsx";
 import Editor from "../Components/Editor.jsx";
 import ReviewPanel from "../Components/ReviewPanel.jsx";
@@ -23,8 +24,7 @@ export default function EditorPage() {
   const [isReviewLoading, setIsReviewLoading] = useState(false);
   const [showReviewPanel, setShowReviewPanel] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
     if (!location.state) return;
@@ -117,9 +117,14 @@ export default function EditorPage() {
     setReviewData(null);
     try {
       const baseUrl = import.meta.env.VITE_BACKEND_URL || "";
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${baseUrl}/api/review`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           code: codeRef.current,
           language
