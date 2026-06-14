@@ -21,28 +21,44 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, passwor
     }
 }));
 
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID || 'dummy_id',
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy_secret',
-    callbackURL: '/api/auth/google/callback'
-}, async (accessToken, refreshToken, profile, done) => {
+passport.use(new GoogleStrategy(
+{
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: '/api/auth/google/callback'
+},
+async (accessToken, refreshToken, profile, done) => {
+
+    console.log("Google Profile:", profile);
+
     try {
         let user = await User.findOne({ googleId: profile.id });
+
+        console.log("Found User:", user);
+
         if (!user) {
-            user = await User.findOne({ email: profile.emails[0].value });
+            user = await User.findOne({
+                email: profile.emails?.[0]?.value
+            });
+
             if (user) {
                 user.googleId = profile.id;
                 await user.save();
             } else {
                 user = await User.create({
                     name: profile.displayName,
-                    email: profile.emails[0].value,
+                    email: profile.emails?.[0]?.value,
                     googleId: profile.id
                 });
             }
         }
+
+        console.log("Returning User:", user);
+
         return done(null, user);
+
     } catch (error) {
+        console.error("Google OAuth Error:", error);
         return done(error, null);
     }
 }));
@@ -59,7 +75,7 @@ router.post('/register', async (req, res) => {
         user = new User({ name, email, password: hashedPassword });
         await user.save();
 
-        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ id: user._id, name: user.name, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
         res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
     } catch (error) {
         console.error("Register Error:", error);
@@ -70,16 +86,31 @@ router.post('/register', async (req, res) => {
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', { session: false }, (err, user, info) => {
         if (err || !user) return res.status(400).json({ error: info?.message || 'Login failed' });
-        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ id: user._id, name: user.name, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
         res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
     })(req, res, next);
 });
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
 
-router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: '/login' }), (req, res) => {
-    const token = jwt.sign({ id: req.user._id }, JWT_SECRET, { expiresIn: '7d' });
-    res.redirect(`${process.env.VITE_FRONTEND_URL || 'http://localhost:5173'}/login?token=${token}`);
+router.get('/google/callback',
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect: '/login'
+  }),
+  (req, res) => {
+
+    console.log("Authenticated User:", req.user);
+
+    const token = jwt.sign(
+      { id: req.user._id, name: req.user.name, email: req.user.email },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.redirect(
+      `${process.env.VITE_FRONTEND_URL}?token=${token}`
+    );
 });
 
 export default router;

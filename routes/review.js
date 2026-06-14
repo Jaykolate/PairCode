@@ -38,6 +38,7 @@ ${code}`;
     const data = JSON.parse(cleanedText);
 
     // Auto-save logic if token is present
+    let saved = false;
     const token = req.header('Authorization');
     if (token) {
       try {
@@ -50,13 +51,14 @@ ${code}`;
             feedback: data
           });
           await session.save();
+          saved = true;
         }
       } catch (err) {
         console.error("Token verification failed during auto-save:", err.message);
       }
     }
 
-    res.json(data);
+    res.json({ ...data, saved });
 
   } catch (error) {
     console.error("Gemini API Error:", error);

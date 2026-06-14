@@ -1,0 +1,636 @@
+/* ════════════════════════════════════════════════════════
+   EditorLayout.css — Sleek VS Code-Inspired Layout
+   ════════════════════════════════════════════════════════ */
+
+/* ─── Root shell ─────────────────────────────────────── */
+.ep {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--bg-base);
+    color: var(--text-main);
+    font-family: var(--font-ui);
+}
+
+/* ─── Top Toolbar ────────────────────────────────────── */
+.ep-toolbar {
+    flex-shrink: 0;
+    height: 38px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+    user-select: none;
+}
+
+.ep-room-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    white-space: nowrap;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ep-lang-select {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: var(--bg-elevated);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 6px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.ep-lang-select:focus {
+    border-color: var(--accent);
+}
+
+.ep-spacer {
+    flex: 1;
+}
+
+.ep-avatars {
+    display: flex;
+    align-items: center;
+    margin-right: 4px;
+}
+
+.ep-ava {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 1.5px solid var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.ep-ava:not(:first-child) {
+    margin-left: -6px;
+}
+
+.ep-toolbar .btn {
+    font-size: 12px;
+    padding: 4px 10px;
+    height: 24px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* ─── Main 3-col area ────────────────────────────────── */
+.ep-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* ─── Left sidebar ───────────────────────────────────── */
+.ep-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+}
+
+.ep-sb-section {
+    border-bottom: 1px solid var(--border);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ep-sb-section.grow {
+    flex: 1;
+    overflow-y: auto;
+    border-bottom: 1px solid var(--border);
+}
+
+.ep-sb-title {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+/* file list */
+.ep-file {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-main);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+}
+
+.ep-file::before {
+    content: '📄';
+    font-size: 12px;
+}
+
+.ep-file:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.ep-file.active {
+    background: rgba(0, 122, 204, 0.15);
+    color: #ffffff;
+    font-weight: 500;
+}
+
+/* online user row */
+.ep-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    padding: 2px 4px;
+}
+
+.ep-user-ava {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.ep-user-dot {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #27c93f;
+    border: 1px solid var(--bg-surface);
+}
+
+.ep-user-name {
+    font-size: 12px;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* session stats */
+.ep-stats {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.ep-stats .val {
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+/* sidebar btns */
+.ep-sb-btn {
+    width: 100%;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px;
+    background: var(--bg-elevated);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    outline: none;
+}
+
+.ep-sb-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ─── Center Editor ──────────────────────────────────── */
+.ep-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg-base);
+}
+
+.ep-editor-tabs {
+    flex-shrink: 0;
+    height: 32px;
+    background: #2d2d2d;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: stretch;
+}
+
+.ep-tab {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: #2d2d2d;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.ep-tab:hover {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-main);
+}
+
+.ep-tab.active {
+    color: #ffffff;
+    background: var(--bg-base);
+    border-top: 2px solid var(--accent);
+}
+
+.ep-code-wrap {
+    flex: 1;
+    overflow: auto;
+}
+
+/* Output panel — slides up */
+.ep-output {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 140px;
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.2s ease;
+    z-index: 50;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.ep-output.open {
+    transform: translateY(0);
+}
+
+.ep-out-header {
+    flex-shrink: 0;
+    height: 32px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ep-out-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 6px;
+    transition: color 0.15s;
+}
+
+.ep-out-close:hover {
+    color: #ffffff;
+}
+
+.ep-out-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-main);
+    line-height: 1.6;
+    background: var(--bg-base);
+}
+
+.ep-out-line {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.ep-out-line.wait {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* ─── Right AI Chat Panel ────────────────────────────── */
+.ep-chat {
+    width: 290px;
+    flex-shrink: 0;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ep-chat-header {
+    flex-shrink: 0;
+    height: 38px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+}
+
+.ep-chat-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ep-gemini-badge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--accent);
+    background: rgba(0, 122, 204, 0.12);
+    border: 1px solid rgba(0, 122, 204, 0.25);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-weight: 600;
+}
+
+.ep-chat-msgs {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--bg-base);
+}
+
+.ep-bubble {
+    max-width: 95%;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.5;
+    border: 1px solid var(--border);
+}
+
+.ep-bubble p {
+    margin: 0;
+}
+
+.ep-bubble.system {
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    padding: 4px 0;
+}
+
+.ep-bubble.user {
+    align-self: flex-end;
+    background: var(--bg-elevated);
+    color: var(--text-main);
+}
+
+.ep-bubble.ai {
+    align-self: flex-start;
+    background: var(--bg-surface);
+    color: var(--text-main);
+}
+
+.ep-code-block {
+    margin-top: 8px;
+    border-left: 2px solid var(--accent);
+    padding: 6px 10px;
+    background: var(--bg-elevated);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-main);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.ep-chat-input-row {
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+    padding: 10px;
+    display: flex;
+    gap: 8px;
+    background: var(--bg-surface);
+}
+
+.ep-chat-input {
+    flex: 1;
+    height: 30px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0 10px;
+    color: var(--text-main);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.ep-chat-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.ep-chat-input:focus {
+    border-color: var(--accent);
+}
+
+.ep-send-btn {
+    width: 30px;
+    height: 30px;
+    background: var(--accent);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s;
+}
+
+.ep-send-btn:hover {
+    opacity: 0.9;
+}
+
+/* ─── Status Bar ─────────────────────────────────────── */
+.ep-status {
+    flex-shrink: 0;
+    height: 22px;
+    background: var(--accent);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    user-select: none;
+}
+
+.ep-status-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.ep-status-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #ffffff;
+    opacity: 0.9;
+}
+
+.ep-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: inline-block;
+}
+
+/* ─── Remote cursor (CodeMirror widget) ──────────────── */
+.remote-cursor {
+    border-left: 2px solid var(--accent);
+    height: 1.2em;
+    position: relative;
+}
+
+.remote-cursor-badge {
+    position: absolute;
+    top: -16px;
+    left: 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: #ffffff;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    padding: 1px 4px;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+/* ─── Notepad Panel ──────────────────────────────────── */
+.ep-notepad {
+    width: 290px;
+    flex-shrink: 0;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ep-notepad-header {
+    flex-shrink: 0;
+    height: 38px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+}
+
+.ep-notepad-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ep-notepad-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    background: var(--bg-base);
+}
+
+.ep-notepad-textarea {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+    color: var(--text-main);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.6;
+    outline: none;
+    resize: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ep-notepad-textarea::placeholder {
+    color: var(--text-tertiary);
+}
+
+.ep-notepad-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
