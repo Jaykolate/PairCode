@@ -3,11 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext.jsx';
+import { ThemeContext } from '../context/ThemeContext.jsx';
 import '../LandingPage.css';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
+  const { theme, toggleTheme } = useContext(ThemeContext);
   let [roomId, setRoomId] = useState('');
   let [username, setUsername] = useState('');
 
@@ -53,17 +55,27 @@ export default function HomePage() {
       <div className="lp-glow-full lp-glow-1" />
       <div className="lp-glow-full lp-glow-2" />
 
-      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 10, display: 'flex', alignItems: 'center', gap: '10px' }}>
         {user ? (
           <>
-            <Link to="/dashboard" className="btn run-btn" style={{ textDecoration: 'none', marginRight: '10px' }}>Dashboard</Link>
+            <Link to="/dashboard" className="btn run-btn" style={{ textDecoration: 'none' }}>Dashboard</Link>
             <button className="btn leave-btn" style={{ width: 'auto' }} onClick={logout}>Logout</button>
           </>
         ) : (
           <>
-            <Link to="/login" className="btn run-btn" style={{ textDecoration: 'none', marginRight: '10px' }}>Login</Link>
+            <Link to="/login" className="btn run-btn" style={{ textDecoration: 'none' }}>Login</Link>
           </>
         )}
+        <button
+          className="theme-toggle"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+        >
+          <span className="theme-toggle-icon">
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </span>
+        </button>
       </div>
       <div className="formWrapper">
         <div className="logo-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '12px' }}>
@@ -82,10 +94,10 @@ export default function HomePage() {
             <line x1="42" y1="50" x2="58" y2="50" stroke="url(#logoGrad)" strokeWidth="6" strokeLinecap="round" strokeDasharray="1 8" style={{ animation: 'pulseLine 2s infinite' }} />
           </svg>
           <div style={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: '800', color: '#ffffff', letterSpacing: '-1px' }}>paircode</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: '800', color: 'var(--brand-color)', letterSpacing: '-1px' }}>paircode</span>
             <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#6366f1', marginLeft: '3px', boxShadow: '0 0 6px #6366f1' }}></span>
           </div>
-          <span style={{ fontSize: '9px', color: '#9ca3af', marginTop: '2px', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '500' }}>Collaborative IDE</span>
+          <span style={{ fontSize: '9px', color: 'var(--text-secondary)', marginTop: '2px', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '500' }}>Collaborative IDE</span>
         </div>
 
         <div className="formHeader">

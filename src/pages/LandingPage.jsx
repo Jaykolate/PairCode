@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext.jsx';
+import { ThemeContext } from '../context/ThemeContext.jsx';
 import '../LandingPage.css';
 
 const collabCode = `def fibonacci(n):
@@ -42,6 +43,7 @@ print("Stats:", calculate_stats([12, 18, 24, 30, 36]))`;
 
 export default function LandingPage() {
     const { user, logout } = useContext(AuthContext);
+    const { theme, toggleTheme } = useContext(ThemeContext);
     const [activeFeature, setActiveFeature] = useState('collab');
     
     // Typing simulation for collab mode
@@ -142,6 +144,16 @@ export default function LandingPage() {
                             <Link to="/register" className="lp-nav-link">Sign up</Link>
                         </>
                     )}
+                    <button
+                        className="theme-toggle"
+                        onClick={toggleTheme}
+                        aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                        title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                    >
+                        <span className="theme-toggle-icon">
+                            {theme === 'dark' ? '☀️' : '🌙'}
+                        </span>
+                    </button>
                     <Link to="/join" className="btn btn-primary lp-nav-cta">Open editor</Link>
                 </nav>
             </header>

@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* ─── Design Tokens ───────────────────────────────────── */
+/* ─── Design Tokens (Dark Mode — default) ────────────── */
 :root {
   --bg-base: #18181c;
   --bg-surface: #202024;
@@ -14,8 +14,110 @@
 
   --border: rgba(255, 255, 255, 0.08);
 
+  /* Extra semantic tokens for theme-aware hardcoded colors */
+  --glass-bg: rgba(17, 17, 20, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05) inset;
+  --input-bg: rgba(0, 0, 0, 0.25);
+  --input-focus-bg: rgba(0, 0, 0, 0.4);
+  --overlay-bg: rgba(24, 24, 28, 0.85);
+  --card-hover-bg: rgba(255, 255, 255, 0.04);
+  --subtle-bg: rgba(255, 255, 255, 0.02);
+  --subtle-bg-hover: rgba(255, 255, 255, 0.06);
+  --nav-bg: rgba(12, 12, 14, 0.75);
+  --selector-bg: rgba(22, 22, 26, 0.55);
+  --editor-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05) inset;
+  --review-bg: rgba(10, 10, 12, 0.7);
+  --console-bg: #09090b;
+  --console-header-bg: rgba(0, 0, 0, 0.2);
+  --faq-bg: rgba(17, 17, 20, 0.5);
+  --faq-hover-bg: rgba(17, 17, 20, 0.7);
+  --faq-open-bg: rgba(17, 17, 20, 0.85);
+  --cta-gradient: radial-gradient(80% 120% at 50% 0%, rgba(108, 99, 255, 0.15) 0%, rgba(12, 12, 14, 0.95) 100%);
+  --footer-bg: rgba(10, 10, 12, 0.6);
+  --grid-line: rgba(255, 255, 255, 0.02);
+  --tab-inactive-bg: rgba(0, 0, 0, 0.15);
+  --nums-bg: rgba(0, 0, 0, 0.08);
+  --chip-bg: rgba(255, 255, 255, 0.02);
+  --ai-btn-bg: rgba(255, 255, 255, 0.05);
+  --line-number-bg: #2d2d2d;
+  --collab-row-border: rgba(255, 255, 255, 0.03);
+  --oauth-bg: rgba(255, 255, 255, 0.04);
+  --oauth-hover-bg: rgba(255, 255, 255, 0.1);
+  --danger-bg: rgba(239, 68, 68, 0.08);
+  --danger-hover-bg: rgba(239, 68, 68, 0.15);
+  --danger-border: rgba(239, 68, 68, 0.2);
+  --brand-color: #ffffff;
+  --heading-color: #ffffff;
+  --chip-title-color: #ffffff;
+  --muted-color: #6b7280;
+  --link-color: #818cf8;
+  --link-hover-color: #a78bfa;
+  --input-placeholder: #4b5563;
+  --divider: rgba(255, 255, 255, 0.08);
+  --console-output: #c9cad4;
+  --accent-gradient: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+
   --font-ui: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ─── Design Tokens (Light Mode) ─────────────────────── */
+[data-theme="light"] {
+  --bg-base: #f5f5f7;
+  --bg-surface: #ffffff;
+  --bg-elevated: #eeeef0;
+
+  --accent: #4f46e5;
+
+  --text-main: #1a1a2e;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+
+  --border: rgba(0, 0, 0, 0.08);
+
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.12), 0 0 1px 1px rgba(0, 0, 0, 0.04) inset;
+  --input-bg: rgba(0, 0, 0, 0.03);
+  --input-focus-bg: rgba(0, 0, 0, 0.05);
+  --overlay-bg: rgba(255, 255, 255, 0.85);
+  --card-hover-bg: rgba(0, 0, 0, 0.03);
+  --subtle-bg: rgba(0, 0, 0, 0.02);
+  --subtle-bg-hover: rgba(0, 0, 0, 0.05);
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --selector-bg: rgba(240, 240, 245, 0.8);
+  --editor-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.15), 0 0 1px 1px rgba(0, 0, 0, 0.06) inset;
+  --review-bg: rgba(245, 245, 247, 0.9);
+  --console-bg: #1e1e2e;
+  --console-header-bg: rgba(0, 0, 0, 0.05);
+  --console-output: #e2e8f0;
+  --faq-bg: rgba(255, 255, 255, 0.7);
+  --faq-hover-bg: rgba(255, 255, 255, 0.9);
+  --faq-open-bg: rgba(255, 255, 255, 0.95);
+  --cta-gradient: radial-gradient(80% 120% at 50% 0%, rgba(79, 70, 229, 0.08) 0%, rgba(245, 245, 247, 0.98) 100%);
+  --footer-bg: rgba(255, 255, 255, 0.8);
+  --grid-line: rgba(0, 0, 0, 0.03);
+  --tab-inactive-bg: rgba(0, 0, 0, 0.03);
+  --nums-bg: rgba(0, 0, 0, 0.02);
+  --chip-bg: rgba(0, 0, 0, 0.02);
+  --ai-btn-bg: rgba(0, 0, 0, 0.04);
+  --line-number-bg: #e8e8ec;
+  --collab-row-border: rgba(0, 0, 0, 0.06);
+  --oauth-bg: rgba(0, 0, 0, 0.03);
+  --oauth-hover-bg: rgba(0, 0, 0, 0.06);
+  --danger-bg: rgba(239, 68, 68, 0.06);
+  --danger-hover-bg: rgba(239, 68, 68, 0.12);
+  --danger-border: rgba(239, 68, 68, 0.15);
+  --brand-color: #1a1a2e;
+  --heading-color: #1a1a2e;
+  --chip-title-color: #1a1a2e;
+  --muted-color: #94a3b8;
+  --link-color: #4f46e5;
+  --link-hover-color: #6366f1;
+  --input-placeholder: #94a3b8;
+  --divider: rgba(0, 0, 0, 0.08);
+  --accent-gradient: linear-gradient(135deg, #1a1a2e 0%, #64748b 100%);
 }
 
 /* ─── Reset ───────────────────────────────────────────── */
@@ -38,6 +140,7 @@ body,
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ─── Global Button System ────────────────────────────── */
@@ -82,4 +185,38 @@ body,
 /* ─── Utility ─────────────────────────────────────────── */
 .mono {
   font-family: var(--font-mono);
+}
+
+/* ─── Theme Toggle ────────────────────────────────────── */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--card-hover-bg);
+  border-color: var(--accent);
+  transform: rotate(15deg);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.2);
+}
+
+.theme-toggle-icon {
+  font-size: 16px;
+  line-height: 1;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-toggle:hover .theme-toggle-icon {
+  transform: scale(1.15);
 }

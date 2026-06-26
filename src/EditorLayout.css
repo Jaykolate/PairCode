@@ -79,7 +79,7 @@
     font-family: var(--font-mono);
     font-size: 10px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--heading-color);
 }
 
 .ep-ava:not(:first-child) {
@@ -159,7 +159,7 @@
 }
 
 .ep-file:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--card-hover-bg);
 }
 
 .ep-file.active {
@@ -243,7 +243,7 @@
 }
 
 .ep-sb-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--card-hover-bg);
 }
 
 /* ─── Center Editor ──────────────────────────────────── */
@@ -259,7 +259,7 @@
 .ep-editor-tabs {
     flex-shrink: 0;
     height: 32px;
-    background: #2d2d2d;
+    background: var(--line-number-bg);
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: stretch;
@@ -272,19 +272,19 @@
     font-family: var(--font-mono);
     font-size: 11px;
     color: var(--text-secondary);
-    background: #2d2d2d;
+    background: var(--line-number-bg);
     border-right: 1px solid var(--border);
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
 
 .ep-tab:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--subtle-bg);
     color: var(--text-main);
 }
 
 .ep-tab.active {
-    color: #ffffff;
+    color: var(--heading-color);
     background: var(--bg-base);
     border-top: 2px solid var(--accent);
 }
@@ -343,7 +343,7 @@
 }
 
 .ep-out-close:hover {
-    color: #ffffff;
+    color: var(--heading-color);
 }
 
 .ep-out-body {
@@ -391,7 +391,7 @@
 .ep-chat-title {
     font-size: 12px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--heading-color);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -539,7 +539,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    color: #ffffff;
+    color: var(--heading-color);
     opacity: 0.9;
 }
 
@@ -547,7 +547,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #ffffff;
+    background: var(--heading-color);
     display: inline-block;
 }
 
@@ -564,7 +564,7 @@
     left: 0;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
-    color: #ffffff;
+    color: var(--heading-color);
     font-family: var(--font-mono);
     font-size: 8px;
     padding: 1px 4px;
@@ -596,7 +596,7 @@
 .ep-notepad-title {
     font-size: 12px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--heading-color);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }

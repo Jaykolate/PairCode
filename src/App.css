@@ -52,15 +52,15 @@
 .formWrapper {
   display: flex;
   flex-direction: column;
-  background-color: rgba(17, 17, 20, 0.65);
+  background-color: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 24px 28px;
   width: 360px;
   max-width: 95%;
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05) inset;
+  box-shadow: var(--glass-shadow);
   z-index: 1;
   position: relative;
 }
@@ -75,7 +75,7 @@
 .formTitle {
   font-size: 16px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--heading-color);
   text-align: center;
   margin-bottom: 4px;
   letter-spacing: -0.5px;
@@ -105,30 +105,30 @@
   font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
-  color: #9ca3af;
+  color: var(--text-secondary);
   letter-spacing: 1px;
 }
 
 .inputBox {
   padding: 9px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
   font-size: 13px;
-  background-color: rgba(0, 0, 0, 0.25);
-  color: #ffffff;
+  background-color: var(--input-bg);
+  color: var(--text-main);
   font-family: var(--font-ui);
   outline: none;
   transition: all 0.2s ease;
 }
 
 .inputBox::placeholder {
-  color: #4b5563;
+  color: var(--input-placeholder);
 }
 
 .inputBox:focus {
   border-color: #6366f1;
   box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--input-focus-bg);
 }
 
 .joinBtn {
@@ -154,7 +154,7 @@
 
 .formDivider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--divider);
   margin: 16px 0 12px 0;
 }
 
@@ -167,13 +167,13 @@
 }
 
 .footerText {
-  color: #6b7280;
+  color: var(--muted-color);
 }
 
 .createRoomBtn {
   background: none;
   border: none;
-  color: #818cf8;
+  color: var(--link-color);
   font-weight: 600;
   cursor: pointer;
   transition: color 0.15s ease;
@@ -184,7 +184,7 @@
 }
 
 .createRoomBtn:hover {
-  color: #a78bfa;
+  color: var(--link-hover-color);
   text-decoration: underline;
 }
 
@@ -337,8 +337,8 @@ footer a {
   inset: 0;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 50px 50px;
   background-position: center top;
   pointer-events: none;

@@ -18,8 +18,8 @@
     inset: 0;
     z-index: 0;
     background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 50px 50px;
     background-position: center top;
     mask-image: radial-gradient(ellipse at 50% 20%, black 50%, transparent 100%);
@@ -61,7 +61,7 @@
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
-    background: rgba(12, 12, 14, 0.75);
+    background: var(--nav-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     z-index: 50;
@@ -77,7 +77,7 @@
     font-family: var(--font-mono);
     font-size: 16px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--brand-color);
     letter-spacing: -0.5px;
 }
 
@@ -104,7 +104,7 @@
 }
 
 .lp-nav-link:hover {
-    color: #ffffff;
+    color: var(--heading-color);
 }
 
 .lp-nav-cta {
@@ -136,12 +136,12 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--subtle-bg);
     border: 1px solid var(--border);
     padding: 6px 14px;
     border-radius: 20px;
     margin-bottom: 28px;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 0 var(--subtle-bg);
 }
 
 .lp-tag-dot {
@@ -166,12 +166,12 @@
     font-weight: 800;
     letter-spacing: -3.5px;
     line-height: 1.08;
-    color: #ffffff;
+    color: var(--heading-color);
     margin-bottom: 24px;
 }
 
 .lp-accent {
-    background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+    background: var(--accent-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -210,14 +210,14 @@
 }
 
 .btn-ghost {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--subtle-bg);
     border: 1px solid var(--border) !important;
     color: var(--text-main);
 }
 
 .btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: var(--subtle-bg-hover);
+    border-color: var(--border) !important;
     opacity: 1;
 }
 
@@ -229,7 +229,7 @@
 .lp-selector {
     display: flex;
     gap: 8px;
-    background: rgba(22, 22, 26, 0.55);
+    background: var(--selector-bg);
     border: 1px solid var(--border);
     padding: 6px;
     border-radius: 40px;
@@ -258,13 +258,13 @@
 }
 
 .lp-selector-btn:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.03);
+    color: var(--heading-color);
+    background: var(--card-hover-bg);
 }
 
 .lp-selector-btn.active {
     background: var(--accent);
-    color: #ffffff;
+    color: #ffffff; /* keep white for active button on accent bg */
     box-shadow: 0 4px 16px rgba(108, 99, 255, 0.35);
 }
 
@@ -284,7 +284,7 @@
     border-radius: 12px;
     overflow: hidden;
     background: var(--bg-surface);
-    box-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05) inset;
+    box-shadow: var(--editor-shadow);
     display: flex;
     flex-direction: column;
 }
@@ -330,12 +330,12 @@
     font-size: 12px;
     color: var(--text-secondary);
     border-right: 1px solid var(--border);
-    background: rgba(0, 0, 0, 0.15);
+    background: var(--tab-inactive-bg);
     transition: all 0.2s ease;
 }
 
 .fe-tab.active {
-    color: #ffffff;
+    color: var(--heading-color);
     background: var(--bg-surface);
     border-bottom: 2px solid var(--accent);
 }
@@ -380,7 +380,7 @@
     text-align: right;
     user-select: none;
     border-right: 1px solid var(--border);
-    background: rgba(0, 0, 0, 0.08);
+    background: var(--nums-bg);
 }
 
 .fe-code {
@@ -456,7 +456,7 @@
 /* Editor Sidebar Panel */
 .fe-review {
     width: 240px;
-    background: rgba(10, 10, 12, 0.7);
+    background: var(--review-bg);
     border-left: 1px solid var(--border);
     padding: 24px 18px;
     display: flex;
@@ -478,7 +478,7 @@
     gap: 12px;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--collab-row-border);
 }
 
 .collab-avatar {
@@ -503,7 +503,7 @@
 
 .collab-name span:first-child {
     font-weight: 500;
-    color: #ffffff;
+    color: var(--heading-color);
 }
 
 .collab-role {
@@ -514,7 +514,7 @@
 
 /* AI review chip alerts */
 .fe-chip {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--chip-bg);
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 12px;
@@ -533,7 +533,7 @@
 .fe-chip-title {
     font-size: 12px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--chip-title-color);
     margin-bottom: 4px;
 }
 
@@ -545,10 +545,10 @@
 
 .fe-ai-action-btn {
     margin-top: auto;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--ai-btn-bg);
     border: 1px solid var(--border);
     border-radius: 6px;
-    color: #ffffff;
+    color: var(--heading-color);
     font-family: var(--font-ui);
     font-size: 12px;
     font-weight: 500;
@@ -566,7 +566,7 @@
 
 /* Terminal Console Slide-Up Panel */
 .fe-console {
-    background: #09090b;
+    background: var(--console-bg);
     border-top: 1px solid var(--border);
     max-height: 0;
     overflow: hidden;
@@ -580,7 +580,7 @@
 .fe-console-header {
     height: 36px;
     border-bottom: 1px solid var(--border);
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--console-header-bg);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -629,7 +629,7 @@
 }
 
 .console-line.output {
-    color: #c9cad4;
+    color: var(--console-output);
 }
 
 /* CSS Loader Spinner */
@@ -674,7 +674,7 @@
     justify-content: center;
     font-family: var(--font-mono);
     font-size: 10px;
-    color: #ffffff;
+    color: var(--heading-color);
     font-weight: 600;
 }
 
@@ -714,7 +714,7 @@
 .lp-section-title {
     font-size: 32px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--heading-color);
     text-align: center;
     letter-spacing: -1.5px;
     margin-bottom: 48px;
@@ -734,7 +734,7 @@
 }
 
 .lp-card {
-    background: rgba(17, 17, 20, 0.65);
+    background: var(--glass-bg);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 36px 28px;
@@ -761,7 +761,7 @@
 .lp-card-title {
     font-size: 16px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--heading-color);
     margin-bottom: 12px;
     letter-spacing: -0.3px;
 }
@@ -789,7 +789,7 @@
 }
 
 .stack-badge {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--subtle-bg);
     border: 1px solid var(--border);
     color: var(--text-secondary);
     font-family: var(--font-mono);
@@ -801,9 +801,9 @@
 }
 
 .stack-badge:hover {
-    color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--heading-color);
+    border-color: var(--border);
+    background: var(--subtle-bg-hover);
     transform: translateY(-1px);
 }
 
@@ -822,7 +822,7 @@
 }
 
 .faq-item {
-    background: rgba(17, 17, 20, 0.5);
+    background: var(--faq-bg);
     border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
@@ -831,13 +831,13 @@
 }
 
 .faq-item:hover {
-    border-color: rgba(255, 255, 255, 0.1);
-    background: rgba(17, 17, 20, 0.7);
+    border-color: var(--border);
+    background: var(--faq-hover-bg);
 }
 
 .faq-item.open {
     border-color: rgba(108, 99, 255, 0.35);
-    background: rgba(17, 17, 20, 0.85);
+    background: var(--faq-open-bg);
 }
 
 .faq-question {
@@ -847,7 +847,7 @@
     padding: 20px 24px;
     font-weight: 500;
     font-size: 14.5px;
-    color: #ffffff;
+    color: var(--heading-color);
     user-select: none;
 }
 
@@ -885,10 +885,10 @@
     overflow: hidden;
     border-radius: 16px;
     border: 1px solid rgba(108, 99, 255, 0.2);
-    background: radial-gradient(80% 120% at 50% 0%, rgba(108, 99, 255, 0.15) 0%, rgba(12, 12, 14, 0.95) 100%);
+    background: var(--cta-gradient);
     padding: 64px 48px;
     text-align: center;
-    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7);
+    box-shadow: var(--glass-shadow);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -909,7 +909,7 @@
 .lp-cta-title {
     font-size: 36px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--heading-color);
     margin-bottom: 16px;
     letter-spacing: -1.5px;
 }
@@ -940,7 +940,7 @@
     position: relative !important;
     border-top: 1px solid var(--border);
     padding: 40px 48px;
-    background: rgba(10, 10, 12, 0.6);
+    background: var(--footer-bg);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     margin-top: auto;

@@ -142,7 +142,7 @@
 }
 
 .btn-dash-secondary:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--card-hover-bg);
     color: var(--text-main);
 }
 
@@ -153,7 +153,7 @@
 }
 
 .btn-dash-danger:hover {
-    background: rgba(239, 68, 68, 0.15);
+    background: var(--danger-hover-bg);
     color: #fca5a5;
 }
 
@@ -305,7 +305,7 @@
 }
 
 .btn-action-delete:hover {
-    background: rgba(239, 68, 68, 0.18);
+    background: var(--danger-hover-bg);
     color: #fca5a5;
 }
 
