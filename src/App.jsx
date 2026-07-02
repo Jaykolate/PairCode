@@ -10,9 +10,6 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/LandingPage.jsx'
-import Lobby from './pages/Lobby.jsx'
-import ChallengeRoom from './pages/ChallengeRoom.jsx'
-
 function App() {
   return (
     <ThemeProvider>
@@ -37,16 +34,6 @@ function App() {
             <Route path='/dashboard' element={
               <ProtectedRoute>
                 <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path='/challenge/lobby' element={
-              <ProtectedRoute>
-                <Lobby />
-              </ProtectedRoute>
-            } />
-            <Route path='/challenge/:matchId' element={
-              <ProtectedRoute>
-                <ChallengeRoom />
               </ProtectedRoute>
             } />
             <Route path='/' element={<LandingPage />} />

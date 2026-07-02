@@ -1,8 +1,8 @@
 # PairCode 🚀
 
-> **Real-Time Collaborative IDE with Gemini AI Review & 1v1 Competitive Coding**
+> **Real-Time Collaborative IDE with Gemini AI Review**
 
-PairCode is a full-stack web application where developers can collaborate in a shared code editor in real time, get instant AI-powered code review via Google Gemini, execute code in a secure sandbox, and compete in live 1v1 coding duels — all in the browser.
+PairCode is a full-stack web application where developers can collaborate in a shared code editor in real time, get instant AI-powered code review via Google Gemini and execute code in a secure sandbox — all in the browser.
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://paircode.onrender.com)
 [![GitHub](https://img.shields.io/badge/GitHub-Jaykolate%2FPairCode-blue?logo=github)](https://github.com/Jaykolate/PairCode)
@@ -32,14 +32,6 @@ PairCode is a full-stack web application where developers can collaborate in a s
 - Run code right in the browser via **Judge0** sandboxed execution
 - Supports **Python**, **JavaScript**, and **Java**
 - Execution output is broadcast to **all room members** simultaneously
-
-### 🏆 1v1 Competitive Coding Challenge
-- **Random Matchmaking** — join a queue and get paired with another online developer
-- **Private Duels** — create a room, share the 6-character code with a friend to start a duel
-- 20-minute countdown timer with auto-submit on expiry
-- Run against visible test cases; submit against all (hidden + visible)
-- Live opponent progress tracker during the match
-- **Rematch system** — challenge your opponent to another round after a match ends
 
 ### 🔐 Authentication
 - Email/password registration & login
@@ -86,7 +78,6 @@ PairCode is a full-stack web application where developers can collaborate in a s
 PairCode/
 ├── server.js               # Express + Socket.IO server (all real-time logic)
 ├── Actions.js              # Socket event name constants
-├── seedProblems.js         # Script to seed challenge problems into MongoDB
 ├── vite.config.js          # Vite configuration
 │
 ├── routes/
@@ -94,13 +85,10 @@ PairCode/
 │   ├── review.js           # Gemini AI code review
 │   ├── chat.js             # Gemini AI multi-turn chat
 │   ├── history.js          # User session history CRUD
-│   └── challenge.js        # Match details API
 │
 ├── models/
 │   ├── User.js             # User schema
 │   ├── Session.js          # AI review history schema
-│   ├── Problem.js          # Coding problem schema (visible + hidden test cases)
-│   └── Match.js            # 1v1 match record schema
 │
 ├── middleware/
 │   └── authMiddleware.js   # JWT verification middleware
@@ -118,9 +106,7 @@ PairCode/
     │   ├── HomePage.jsx        # Join/create room
     │   ├── EditorPage.jsx      # Collaborative code editor
     │   ├── Dashboard.jsx       # User profile & review history
-    │   ├── Lobby.jsx           # 1v1 challenge matchmaking lobby
-    │   ├── ChallengeRoom.jsx   # Live 1v1 challenge arena
-    │   ├── Login.jsx
+            │   ├── Login.jsx
     │   └── Register.jsx
     │
     └── Components/
@@ -181,14 +167,6 @@ VITE_FRONTEND_URL=http://localhost:5173
 PORT=10000
 ```
 
-### 4. Seed Challenge Problems (Optional)
-
-To populate the database with coding problems for 1v1 challenges:
-
-```bash
-node seedProblems.js
-```
-
 ### 5. Run the Application
 
 **Development mode** (run both simultaneously):
@@ -223,7 +201,6 @@ The frontend is served as static files from the Express server at `http://localh
 | `POST` | `/api/chat` | No | Send a message to Gemini AI chat |
 | `GET` | `/api/history` | Yes | Get user's review history |
 | `DELETE` | `/api/history/:id` | Yes | Delete a review session |
-| `GET` | `/api/challenge/match/:id` | Yes | Get match & problem details |
 
 ---
 
@@ -238,34 +215,6 @@ User types code
     → Their editors update instantly
 ```
 
-### 1v1 Matchmaking
-
-```
-Player A clicks "Find Match"
-    → emits 'find-match' to server
-    → Server checks matchmakingQueue[]
-
-If queue empty:
-    → Player A added to queue, waits
-
-If Player B already in queue:
-    → Server picks a random problem from DB
-    → Creates a Match document in MongoDB
-    → Emits 'match-found' to both players
-    → Both navigate to /challenge/:matchId
-```
-
-### Code Submission (Challenge Mode)
-
-```
-Player submits code
-    → Server fetches all test cases (visible + hidden) from DB
-    → Runs code against each via Judge0 in parallel (Promise.all)
-    → Updates Match document with results
-    → Emits 'opponent-progress' to both players
-    → If all tests pass → emits 'match-result' declaring winner
-```
-
 ---
 
 ## 🛣️ Routes
@@ -278,8 +227,6 @@ Player submits code
 | `/login` | Login | No |
 | `/register` | Register | No |
 | `/dashboard` | User Dashboard | ✅ Yes |
-| `/challenge/lobby` | Matchmaking Lobby | ✅ Yes |
-| `/challenge/:matchId` | 1v1 Challenge Room | ✅ Yes |
 
 ---
 

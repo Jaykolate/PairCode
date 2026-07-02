@@ -97,24 +97,6 @@ export default function Dashboard() {
                         <p>Track your code review logs, view AI diagnostic ratings, and manage your collaboration workspace.</p>
                     </header>
 
-                    <div className="challenge-section-header" style={{ marginTop: '1rem' }}>
-                        <h3>Play Modes</h3>
-                    </div>
-                    <div className="session-card challenge-card" onClick={() => navigate('/challenge/lobby')} style={{ cursor: 'pointer' }}>
-                        <div className="session-meta">
-                            <div className="session-lang-row">
-                                <span className="session-lang">🏆 1v1 Coding Challenge</span>
-                                <span className="session-score">Live PvP</span>
-                            </div>
-                            <span className="session-date">
-                                Race against another developer to solve coding problems in Python. Real-time test evaluation!
-                            </span>
-                        </div>
-                        <div className="session-actions">
-                            <button className="btn-action btn-action-view">Find Match</button>
-                        </div>
-                    </div>
-
                     <div className="history-section-header">
                         <h3>Review History</h3>
                     </div>

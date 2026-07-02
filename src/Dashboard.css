@@ -188,16 +188,14 @@
 }
 
 /* ─── Section Headers ────────────────────────────── */
-.history-section-header,
-.challenge-section-header {
+.history-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 0.5rem;
 }
 
-.history-section-header h3,
-.challenge-section-header h3 {
+.history-section-header h3 {
     font-size: 1rem;
     font-weight: 600;
     margin: 0;
@@ -227,12 +225,6 @@
 .session-card:hover {
     border-color: rgba(99, 102, 241, 0.35);
     background: var(--bg-elevated);
-}
-
-/* 1v1 challenge card special variant */
-.session-card.challenge-card {
-    cursor: pointer;
-    border-left: 3px solid var(--accent);
 }
 
 .session-meta {
