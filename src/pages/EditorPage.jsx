@@ -44,6 +44,49 @@ export default function EditorPage() {
     activeFileRef.current = activeFile;
   }, [activeFile]);
 
+  // Output Resizer State & Handlers
+  const [outputHeight, setOutputHeight] = useState(180);
+  const isResizingRef = useRef(false);
+
+  const startResizing = (e) => {
+    e.preventDefault();
+    isResizingRef.current = true;
+    document.body.style.cursor = 'ns-resize';
+    document.body.style.userSelect = 'none';
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizingRef.current) return;
+      const epCenter = document.querySelector('.ep-center');
+      if (epCenter) {
+        const rect = epCenter.getBoundingClientRect();
+        const newHeight = rect.bottom - e.clientY;
+        const minHeight = 60;
+        const maxHeight = rect.height * 0.8;
+        if (newHeight >= minHeight && newHeight <= maxHeight) {
+          setOutputHeight(newHeight);
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isResizingRef.current) {
+        isResizingRef.current = false;
+        document.body.style.cursor = 'default';
+        document.body.style.userSelect = 'auto';
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
+
   /* Socket setup */
   useEffect(() => {
     if (!location.state) return;
@@ -446,7 +489,8 @@ export default function EditorPage() {
           </div>
 
           {/* output panel */}
-          <div className={`ep-output ${isOutputOpen ? 'open' : ''}`}>
+          <div className={`ep-output ${isOutputOpen ? 'open' : ''}`} style={{ height: `${outputHeight}px` }}>
+            <div className="ep-output-resizer" onMouseDown={startResizing} />
             <div className="ep-out-header">
               <span>Terminal — Judge0</span>
               <button className="ep-out-close" onClick={() => setIsOutputOpen(false)}>✕</button>
@@ -463,6 +507,7 @@ export default function EditorPage() {
               )}
             </div>
           </div>
+
 
         </div>
 

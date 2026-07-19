@@ -315,6 +315,24 @@
     transform: translateY(0);
 }
 
+.ep-output-resizer {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 6px;
+    cursor: ns-resize;
+    background: transparent;
+    z-index: 100;
+    transition: background 0.15s;
+}
+
+.ep-output-resizer:hover,
+.ep-output-resizer:active {
+    background: var(--accent);
+}
+
+
 .ep-out-header {
     flex-shrink: 0;
     height: 32px;
