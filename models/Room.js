@@ -21,11 +21,20 @@ const RoomSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  name: {
+    type: String,
+    default: 'Collaboration Room',
+  },
+  isPrivate: {
+    type: Boolean,
+    default: false,
+  },
   files: [FileSchema],
   activeFile: {
     type: String,
     default: 'main.js',
   },
 }, { timestamps: true });
+
 
 export default mongoose.model('Room', RoomSchema);

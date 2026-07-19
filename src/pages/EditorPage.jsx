@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.jsx';
+import { ThemeContext } from '../context/ThemeContext.jsx';
+
 import Editor from '../Components/Editor.jsx';
 import AIChatPanel from '../Components/AIChatPanel.jsx';
 import NotepadPanel from '../Components/NotepadPanel.jsx';
@@ -16,7 +18,8 @@ export default function EditorPage() {
   const navigate = useNavigate();
   const { roomId } = useParams();
   const location = useLocation();
-  const { token } = useContext(AuthContext);
+  const { token, user, logout } = useContext(AuthContext);
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const socketRef = useRef(null);
   const codeRef = useRef('');
@@ -38,6 +41,11 @@ export default function EditorPage() {
   // Multi-file state
   const [files, setFiles] = useState([{ filename: 'main.js', language: 'javascript', content: '' }]);
   const [activeFile, setActiveFile] = useState('main.js');
+
+  // Settings & Room Info state
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [roomName, setRoomName] = useState('Collaboration Room');
+  const [roomPrivacy, setRoomPrivacy] = useState(false);
 
   const activeFileRef = useRef(activeFile);
   useEffect(() => {
@@ -107,15 +115,18 @@ export default function EditorPage() {
         setClients(clients);
       });
 
-      socketRef.current.on('room:sync', ({ files: syncedFiles, activeFile: syncedActiveFile }) => {
+      socketRef.current.on('room:sync', ({ files: syncedFiles, activeFile: syncedActiveFile, name, isPrivate }) => {
         setFiles(syncedFiles);
         setActiveFile(syncedActiveFile);
+        if (name) setRoomName(name);
+        if (isPrivate !== undefined) setRoomPrivacy(isPrivate);
         const actFileObj = syncedFiles.find(f => f.filename === syncedActiveFile);
         if (actFileObj) {
           setLanguage(actFileObj.language);
           codeRef.current = actFileObj.content || '';
         }
       });
+
 
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ filename, code }) => {
         setFiles(prev => prev.map(f => f.filename === filename ? { ...f, content: code } : f));
@@ -327,7 +338,7 @@ export default function EditorPage() {
 
       {/* ── Toolbar ── */}
       <div className="ep-toolbar">
-        <div className="ep-room-badge">{shortRoom}</div>
+        <div className="ep-room-badge" title={`Room ID: ${roomId}`}>{roomName}</div>
 
         <select
           className="ep-lang-select"
@@ -354,7 +365,95 @@ export default function EditorPage() {
           className="btn btn-ghost"
           onClick={() => { navigator.clipboard.writeText(roomId); toast.success('Room ID copied'); }}
         >Share</button>
-        <button className="btn btn-ghost">Settings</button>
+        
+        <div style={{ position: 'relative' }}>
+          <button
+            className="btn btn-ghost"
+            onClick={() => setIsSettingsOpen(v => !v)}
+          >⚙️ Settings</button>
+          
+          {isSettingsOpen && (
+            <div className="ep-settings-card">
+              {/* Header */}
+              <div className="ep-settings-header">
+                <span>Room Settings</span>
+                <button className="ep-settings-close-btn" onClick={() => setIsSettingsOpen(false)}>✕</button>
+              </div>
+
+              {/* Account/Profile Section */}
+              <div className="ep-settings-sec">
+                <div className="ep-settings-sec-title">Account</div>
+                {user ? (
+                  <div className="ep-settings-profile">
+                    <div className="ep-settings-avatar">
+                      {(user.name || '?')[0].toUpperCase()}
+                    </div>
+                    <div className="ep-settings-profile-info">
+                      <div className="ep-settings-profile-name">{user.name}</div>
+                      <div className="ep-settings-profile-email">{user.email}</div>
+                    </div>
+                    <button className="btn btn-ghost ep-settings-profile-btn" onClick={() => { logout(); toast.success('Logged out successfully'); navigate('/login'); }}>Logout</button>
+                  </div>
+                ) : (
+                  <div className="ep-settings-auth-btns">
+                    <button className="btn btn-ghost ep-settings-auth-btn" onClick={() => { setIsSettingsOpen(false); navigate('/login'); }}>Login</button>
+                    <button className="btn btn-primary ep-settings-auth-btn" onClick={() => { setIsSettingsOpen(false); navigate('/register'); }}>Sign Up</button>
+                  </div>
+                )}
+              </div>
+
+              {/* Room Config Section */}
+              <div className="ep-settings-sec">
+                <div className="ep-settings-sec-title">Room Customization</div>
+                <div className="ep-settings-row">
+                  <label className="ep-settings-label">Name</label>
+                  <input
+                    type="text"
+                    className="ep-settings-input"
+                    value={roomName}
+                    onChange={(e) => {
+                      setRoomName(e.target.value);
+                      socketRef.current?.emit('room:update-settings', { roomId, name: e.target.value });
+                    }}
+                  />
+                </div>
+                <div className="ep-settings-row ep-settings-row-checkbox">
+                  <span className="ep-settings-label">Private Room</span>
+                  <input
+                    type="checkbox"
+                    className="ep-settings-checkbox"
+                    checked={roomPrivacy}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setRoomPrivacy(checked);
+                      socketRef.current?.emit('room:update-settings', { roomId, isPrivate: checked });
+                      toast.success(checked ? 'Room visibility set to Private' : 'Room visibility set to Public');
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Preferences Section */}
+              <div className="ep-settings-sec">
+                <div className="ep-settings-sec-title">Preferences</div>
+                <div className="ep-settings-row ep-settings-row-theme">
+                  <span className="ep-settings-label">Theme ({theme === 'dark' ? 'Dark' : 'Light'})</span>
+                  <button className="ep-settings-theme-btn" onClick={toggleTheme}>
+                    {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Navigation Section */}
+              <div className="ep-settings-sec ep-settings-sec-nav">
+                <button className="btn btn-ghost ep-settings-nav-btn" onClick={() => { setIsSettingsOpen(false); navigate('/dashboard'); }}>
+                  🏠 Go to Dashboard
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         <button className="btn btn-primary" onClick={handleRun}>▶ Run</button>
         <button
           className="btn btn-ghost"
@@ -492,7 +591,7 @@ export default function EditorPage() {
           <div className={`ep-output ${isOutputOpen ? 'open' : ''}`} style={{ height: `${outputHeight}px` }}>
             <div className="ep-output-resizer" onMouseDown={startResizing} />
             <div className="ep-out-header">
-              <span>Terminal — Judge0</span>
+              <span>Terminal</span>
               <button className="ep-out-close" onClick={() => setIsOutputOpen(false)}>✕</button>
             </div>
             <div className="ep-out-body">

@@ -125,7 +125,7 @@ io.on('connection', (socket) => {
         });
         await room.save();
       }
-      socket.emit('room:sync', { files: room.files, activeFile: room.activeFile });
+      socket.emit('room:sync', { files: room.files, activeFile: room.activeFile, name: room.name, isPrivate: room.isPrivate });
     } catch (err) {
       console.error('Error in ACTIONS.JOIN database operation:', err);
     }
@@ -156,7 +156,7 @@ io.on('connection', (socket) => {
           room.files.push({ filename, language, content: '' });
           room.activeFile = filename;
           await room.save();
-          io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile });
+          io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile, name: room.name, isPrivate: room.isPrivate });
         }
       }
     } catch (err) {
@@ -173,7 +173,7 @@ io.on('connection', (socket) => {
           room.activeFile = room.files[0]?.filename || '';
         }
         await room.save();
-        io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile });
+        io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile, name: room.name, isPrivate: room.isPrivate });
       }
     } catch (err) {
       console.error('Error deleting file:', err);
@@ -200,7 +200,7 @@ io.on('connection', (socket) => {
           room.activeFile = newFilename;
         }
         await room.save();
-        io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile });
+        io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile, name: room.name, isPrivate: room.isPrivate });
       }
     } catch (err) {
       console.error('Error renaming file:', err);
@@ -213,12 +213,32 @@ io.on('connection', (socket) => {
       if (room) {
         room.activeFile = filename;
         await room.save();
-        io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile });
+        io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile, name: room.name, isPrivate: room.isPrivate });
       }
     } catch (err) {
       console.error('Error selecting active file:', err);
     }
   });
+
+  socket.on('room:update-settings', async ({ roomId, name, isPrivate }) => {
+    try {
+      const room = await Room.findOne({ roomId });
+      if (room) {
+        if (name !== undefined) room.name = name;
+        if (isPrivate !== undefined) room.isPrivate = isPrivate;
+        await room.save();
+        io.to(roomId).emit('room:sync', {
+          files: room.files,
+          activeFile: room.activeFile,
+          name: room.name,
+          isPrivate: room.isPrivate
+        });
+      }
+    } catch (err) {
+      console.error('Error updating room settings:', err);
+    }
+  });
+
 
   socket.on(ACTIONS.CURSOR_CHANGE, ({ roomId, pos, username }) => {
     socket.in(roomId).emit(ACTIONS.CURSOR_CHANGE, { pos, username, socketId: socket.id });

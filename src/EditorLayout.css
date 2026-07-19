@@ -747,3 +747,205 @@
     opacity: 1 !important;
     color: #ff5f56;
 }
+
+/* Settings Card Popover styles */
+.ep-settings-card {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 290px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    padding: 16px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+    color: var(--text-main);
+}
+
+.ep-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.ep-settings-header span {
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+}
+
+.ep-settings-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px;
+    line-height: 1;
+}
+
+.ep-settings-close-btn:hover {
+    color: var(--text-main);
+}
+
+.ep-settings-sec {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+}
+
+.ep-settings-sec-title {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.ep-settings-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ep-settings-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.ep-settings-profile-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ep-settings-profile-name {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ep-settings-profile-email {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ep-settings-profile-btn {
+    font-size: 11px;
+    padding: 4px 8px;
+    height: auto;
+}
+
+.ep-settings-auth-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.ep-settings-auth-btn {
+    flex: 1;
+    font-size: 12px;
+    padding: 6px;
+    height: auto;
+    justify-content: center;
+}
+
+.ep-settings-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ep-settings-row-checkbox {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.ep-settings-row-theme {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ep-settings-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.ep-settings-input {
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 10px;
+    color: var(--text-main);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.ep-settings-input:focus {
+    border-color: var(--accent);
+}
+
+.ep-settings-checkbox {
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+}
+
+.ep-settings-theme-btn {
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 11px;
+    font-family: var(--font-ui);
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.ep-settings-theme-btn:hover {
+    background: var(--card-hover-bg);
+    border-color: var(--text-secondary);
+}
+
+.ep-settings-sec-nav {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.ep-settings-nav-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 12px;
+    padding: 8px;
+    height: auto;
+}
