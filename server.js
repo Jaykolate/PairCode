@@ -13,6 +13,7 @@ import authRouter from './routes/auth.js';
 import historyRouter from './routes/history.js';
 import chatRouter from './routes/chat.js';
 import jwt from 'jsonwebtoken';
+import Room from './models/Room.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -102,7 +103,7 @@ io.on('connection', (socket) => {
   console.log("✅ Socket connected:", socket.id);
 
 
-  socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
+  socket.on(ACTIONS.JOIN, async ({ roomId, username }) => {
     userSocketMap[socket.id] = username;
     socket.join(roomId);
     const clients = getAllConnectedClients(roomId);
@@ -114,24 +115,109 @@ io.on('connection', (socket) => {
       });
     });
 
+    try {
+      let room = await Room.findOne({ roomId });
+      if (!room) {
+        room = new Room({
+          roomId,
+          files: [{ filename: 'main.js', language: 'javascript', content: '' }],
+          activeFile: 'main.js'
+        });
+        await room.save();
+      }
+      socket.emit('room:sync', { files: room.files, activeFile: room.activeFile });
+    } catch (err) {
+      console.error('Error in ACTIONS.JOIN database operation:', err);
+    }
+
     if (roomNotepadMap[roomId] !== undefined) {
       socket.emit('notepad-sync', { notepadContent: roomNotepadMap[roomId] });
     }
   });
 
-  socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
-    socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
+  socket.on(ACTIONS.CODE_CHANGE, async ({ roomId, filename, code }) => {
+    socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { filename, code });
+    try {
+      await Room.updateOne(
+        { roomId, 'files.filename': filename },
+        { $set: { 'files.$.content': code } }
+      );
+    } catch (err) {
+      console.error('Error saving code change:', err);
+    }
   });
 
-  socket.on(ACTIONS.SYNC_CODE, ({ socketId, code, language }) => {
-    io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
-    io.to(socketId).emit(ACTIONS.LANGUAGE_CHANGE, { language });
+  socket.on('file:create', async ({ roomId, filename, language }) => {
+    try {
+      const room = await Room.findOne({ roomId });
+      if (room) {
+        const exists = room.files.some(f => f.filename === filename);
+        if (!exists) {
+          room.files.push({ filename, language, content: '' });
+          room.activeFile = filename;
+          await room.save();
+          io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile });
+        }
+      }
+    } catch (err) {
+      console.error('Error creating file:', err);
+    }
   });
 
-  // Duplicate listener consolidated below
+  socket.on('file:delete', async ({ roomId, filename }) => {
+    try {
+      const room = await Room.findOne({ roomId });
+      if (room) {
+        room.files = room.files.filter(f => f.filename !== filename);
+        if (room.activeFile === filename) {
+          room.activeFile = room.files[0]?.filename || '';
+        }
+        await room.save();
+        io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile });
+      }
+    } catch (err) {
+      console.error('Error deleting file:', err);
+    }
+  });
 
-  socket.on(ACTIONS.LANGUAGE_CHANGE, ({ roomId, language }) => {
-    socket.in(roomId).emit(ACTIONS.LANGUAGE_CHANGE, { language });
+  socket.on('file:rename', async ({ roomId, oldFilename, newFilename, language }) => {
+    try {
+      const room = await Room.findOne({ roomId });
+      if (room) {
+        const file = room.files.find(f => f.filename === oldFilename);
+        if (file) {
+          file.filename = newFilename;
+          if (language) {
+            file.language = language;
+          } else {
+            const ext = newFilename.split('.').pop();
+            if (ext === 'py') file.language = 'python';
+            else if (ext === 'java') file.language = 'java';
+            else if (ext === 'js') file.language = 'javascript';
+          }
+        }
+        if (room.activeFile === oldFilename) {
+          room.activeFile = newFilename;
+        }
+        await room.save();
+        io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile });
+      }
+    } catch (err) {
+      console.error('Error renaming file:', err);
+    }
+  });
+
+  socket.on('file:select', async ({ roomId, filename }) => {
+    try {
+      const room = await Room.findOne({ roomId });
+      if (room) {
+        room.activeFile = filename;
+        await room.save();
+        io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile });
+      }
+    } catch (err) {
+      console.error('Error selecting active file:', err);
+    }
   });
 
   socket.on(ACTIONS.CURSOR_CHANGE, ({ roomId, pos, username }) => {
@@ -180,7 +266,7 @@ io.on('connection', (socket) => {
 
 
       const result = await response.json();
-      console.log("Judge0 result:", result); // 👈 add this
+     
 
       io.to(roomId).emit(ACTIONS.CODE_OUTPUT, {
         output: result.stdout || "",
@@ -188,7 +274,7 @@ io.on('connection', (socket) => {
       });
 
     } catch (error) {
-      console.error("Judge0 error:", error); // 👈 and this
+     
       io.to(roomId).emit(ACTIONS.CODE_OUTPUT, {
         output: "",
         stderr: "Error executing code: " + error.message,

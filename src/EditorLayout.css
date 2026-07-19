@@ -634,3 +634,98 @@
     border-color: var(--accent);
     box-shadow: 0 0 0 1px var(--accent);
 }
+
+/* Multi-file Explorer UI additions */
+.ep-sb-title-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.ep-add-file-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.ep-add-file-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+
+.ep-files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ep-file {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ep-file-name-txt {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ep-file-actions {
+    display: none;
+    gap: 4px;
+}
+
+.ep-file:hover .ep-file-actions {
+    display: flex;
+}
+
+.ep-file-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 2px;
+    font-size: 10px;
+    border-radius: 2px;
+    transition: color 0.15s;
+}
+
+.ep-file-btn:hover {
+    color: var(--text-main);
+}
+
+.ep-tab {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ep-tab-close-btn {
+    opacity: 0;
+    font-size: 9px;
+    cursor: pointer;
+    transition: opacity 0.15s, color 0.15s;
+    color: var(--text-secondary);
+}
+
+.ep-tab:hover .ep-tab-close-btn {
+    opacity: 0.6;
+}
+
+.ep-tab-close-btn:hover {
+    opacity: 1 !important;
+    color: #ff5f56;
+}

@@ -35,6 +35,15 @@ export default function EditorPage() {
   const [notepadContent, setNotepadContent] = useState('');
   const emitTimeoutRef = useRef(null);
 
+  // Multi-file state
+  const [files, setFiles] = useState([{ filename: 'main.js', language: 'javascript', content: '' }]);
+  const [activeFile, setActiveFile] = useState('main.js');
+
+  const activeFileRef = useRef(activeFile);
+  useEffect(() => {
+    activeFileRef.current = activeFile;
+  }, [activeFile]);
+
   /* Socket setup */
   useEffect(() => {
     if (!location.state) return;
@@ -51,14 +60,24 @@ export default function EditorPage() {
         username: location.state.username,
       });
 
-      socketRef.current.on(ACTIONS.JOINED, ({ clients, socketId }) => {
+      socketRef.current.on(ACTIONS.JOINED, ({ clients }) => {
         setClients(clients);
-        if (socketId !== socketRef.current.id && codeRef.current) {
-          socketRef.current.emit(ACTIONS.SYNC_CODE, {
-            socketId,
-            code: codeRef.current,
-            language,
-          });
+      });
+
+      socketRef.current.on('room:sync', ({ files: syncedFiles, activeFile: syncedActiveFile }) => {
+        setFiles(syncedFiles);
+        setActiveFile(syncedActiveFile);
+        const actFileObj = syncedFiles.find(f => f.filename === syncedActiveFile);
+        if (actFileObj) {
+          setLanguage(actFileObj.language);
+          codeRef.current = actFileObj.content || '';
+        }
+      });
+
+      socketRef.current.on(ACTIONS.CODE_CHANGE, ({ filename, code }) => {
+        setFiles(prev => prev.map(f => f.filename === filename ? { ...f, content: code } : f));
+        if (filename === activeFileRef.current) {
+          codeRef.current = code;
         }
       });
 
@@ -73,8 +92,6 @@ export default function EditorPage() {
           setIsOutputOpen(true);
         }
       });
-
-      socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, ({ language }) => setLanguage(language));
 
       socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
         toast(`${username} left`);
@@ -102,21 +119,119 @@ export default function EditorPage() {
 
   if (!location.state) return <Navigate to="/" />;
 
+  /* File Handlers */
+  const handleCreateFile = () => {
+    const filename = prompt('Enter filename (e.g., script.js, utils.py):');
+    if (!filename) return;
+
+    if (files.some(f => f.filename === filename)) {
+      toast.error('File already exists');
+      return;
+    }
+
+    const ext = filename.split('.').pop();
+    let lang = 'javascript';
+    if (ext === 'py') lang = 'python';
+    else if (ext === 'java') lang = 'java';
+
+    // Optimistically update locally
+    setFiles(prev => [...prev, { filename, language: lang, content: '' }]);
+    setActiveFile(filename);
+    setLanguage(lang);
+    codeRef.current = '';
+
+    socketRef.current?.emit('file:create', { roomId, filename, language: lang });
+  };
+
+  const handleDeleteFile = (filename) => {
+    if (files.length <= 1) {
+      toast.error('Cannot delete the last remaining file');
+      return;
+    }
+
+    if (confirm(`Are you sure you want to delete ${filename}?`)) {
+      // Optimistically update locally
+      const updatedFiles = files.filter(f => f.filename !== filename);
+      setFiles(updatedFiles);
+      if (activeFile === filename) {
+        const nextActive = updatedFiles[0]?.filename || '';
+        setActiveFile(nextActive);
+        const actFileObj = updatedFiles[0];
+        if (actFileObj) {
+          setLanguage(actFileObj.language);
+          codeRef.current = actFileObj.content || '';
+        }
+      }
+
+      socketRef.current?.emit('file:delete', { roomId, filename });
+    }
+  };
+
+  const handleRenameFile = (oldFilename) => {
+    const newFilename = prompt('Enter new filename:', oldFilename);
+    if (!newFilename || newFilename === oldFilename) return;
+
+    if (files.some(f => f.filename === newFilename)) {
+      toast.error('A file with that name already exists');
+      return;
+    }
+
+    // Determine language from new extension
+    const ext = newFilename.split('.').pop();
+    let lang = 'javascript';
+    if (ext === 'py') lang = 'python';
+    else if (ext === 'java') lang = 'java';
+
+    // Optimistically update locally
+    setFiles(prev => prev.map(f => f.filename === oldFilename ? { ...f, filename: newFilename, language: lang } : f));
+    if (activeFile === oldFilename) {
+      setActiveFile(newFilename);
+      setLanguage(lang);
+    }
+
+    socketRef.current?.emit('file:rename', { roomId, oldFilename, newFilename, language: lang });
+  };
+
+  const handleSelectFile = (filename) => {
+    setActiveFile(filename);
+    const actFileObj = files.find(f => f.filename === filename);
+    if (actFileObj) {
+      setLanguage(actFileObj.language);
+      codeRef.current = actFileObj.content || '';
+    }
+    socketRef.current?.emit('file:select', { roomId, filename });
+  };
+
   /* Handlers */
   const handleRun = () => {
     setIsOutputOpen(true);
     setIsCompiling(true);
     setOutput('');
     socketRef.current?.emit(ACTIONS.COMPILE_CODE, {
-      roomId, code: codeRef.current,
-      language, version: LANG_VERSION[language],
+      roomId,
+      code: codeRef.current,
+      language,
+      version: LANG_VERSION[language],
     });
   };
 
   const handleLangChange = (e) => {
     const l = e.target.value;
     setLanguage(l);
-    socketRef.current?.emit(ACTIONS.LANGUAGE_CHANGE, { roomId, language: l });
+    
+    // Automatically rename the active file's extension to match the new language
+    const extMap = { javascript: 'js', python: 'py', java: 'java' };
+    const targetExt = extMap[l];
+    if (targetExt) {
+      const dotIndex = activeFile.lastIndexOf('.');
+      const baseName = dotIndex !== -1 ? activeFile.substring(0, dotIndex) : activeFile;
+      const newFilename = `${baseName}.${targetExt}`;
+      
+      setFiles(prev => prev.map(f => f.filename === activeFile ? { ...f, filename: newFilename, language: l } : f));
+      setActiveFile(newFilename);
+      
+      socketRef.current?.emit('file:rename', { roomId, oldFilename: activeFile, newFilename, language: l });
+    }
   };
 
   const handleNotepadChange = (newText) => {
@@ -139,7 +254,8 @@ export default function EditorPage() {
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
       const res = await fetch(`${baseUrl}/api/review`, {
-        method: 'POST', headers,
+        method: 'POST',
+        headers,
         body: JSON.stringify({ code: codeRef.current, language }),
       });
       if (!res.ok) throw new Error();
@@ -161,7 +277,6 @@ export default function EditorPage() {
     }
   };
 
-  const ext = language === 'python' ? 'py' : language === 'java' ? 'java' : 'js';
   const shortRoom = roomId ? roomId.substring(0, 8) + '…' : '—';
 
   return (
@@ -230,8 +345,35 @@ export default function EditorPage() {
         <div className="ep-sidebar">
 
           <div className="ep-sb-section">
-            <div className="ep-sb-title">Files</div>
-            <div className="ep-file active">main.{ext}</div>
+            <div className="ep-sb-title-wrap">
+              <div className="ep-sb-title">Files</div>
+              <button className="ep-add-file-btn" onClick={handleCreateFile} title="New File">+</button>
+            </div>
+            <div className="ep-files-list">
+              {files.map(f => (
+                <div
+                  key={f.filename}
+                  className={`ep-file ${activeFile === f.filename ? 'active' : ''}`}
+                  onClick={() => handleSelectFile(f.filename)}
+                >
+                  <span className="ep-file-name-txt">{f.filename}</span>
+                  <div className="ep-file-actions">
+                    <button
+                      className="ep-file-btn"
+                      onClick={(e) => { e.stopPropagation(); handleRenameFile(f.filename); }}
+                      title="Rename"
+                    >✏️</button>
+                    {files.length > 1 && (
+                      <button
+                        className="ep-file-btn"
+                        onClick={(e) => { e.stopPropagation(); handleDeleteFile(f.filename); }}
+                        title="Delete"
+                      >✕</button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="ep-sb-section grow">
@@ -266,15 +408,32 @@ export default function EditorPage() {
         <div className="ep-center">
 
           <div className="ep-editor-tabs">
-            <div className="ep-tab active">main.{ext}</div>
+            {files.map(f => (
+              <div
+                key={f.filename}
+                className={`ep-tab ${activeFile === f.filename ? 'active' : ''}`}
+                onClick={() => handleSelectFile(f.filename)}
+              >
+                <span>{f.filename}</span>
+                {files.length > 1 && (
+                  <span
+                    className="ep-tab-close-btn"
+                    onClick={(e) => { e.stopPropagation(); handleDeleteFile(f.filename); }}
+                  >✕</span>
+                )}
+              </div>
+            ))}
           </div>
 
           <div className="ep-code-wrap">
             <Editor
               socketRef={socketRef}
               roomId={roomId}
-              language={language}
-              onCodeChange={code => { codeRef.current = code; }}
+              activeFile={files.find(f => f.filename === activeFile)}
+              onCodeChange={code => {
+                codeRef.current = code;
+                setFiles(prev => prev.map(f => f.filename === activeFile ? { ...f, content: code } : f));
+              }}
               onCursorChange={pos => {
                 setCursorPos(pos);
                 socketRef.current?.emit(ACTIONS.CURSOR_CHANGE, {

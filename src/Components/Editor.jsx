@@ -11,23 +11,42 @@ import 'codemirror/mode/python/python';
 import 'codemirror/addon/edit/closebrackets';
 import ACTIONS from '../../Actions.js';
 
-export default function Editor({ language, socketRef, roomId, onCodeChange, onCursorChange, isPrivate = false }) {
+export default function Editor({ activeFile, socketRef, roomId, onCodeChange, onCursorChange, isPrivate = false }) {
   const editorRef = useRef(null);
-  const isRemoteChange = useRef(false);
+  const activeFileRef = useRef(activeFile);
+
+  // Sync ref with current activeFile prop
+  useEffect(() => {
+    activeFileRef.current = activeFile;
+  }, [activeFile]);
 
   // 1. Initialize CodeMirror
   useEffect(() => {
     if (!editorRef.current) {
+      const modeMap = {
+        javascript: "javascript",
+        java: "text/x-java",
+        python: "python"
+      };
+      
+      const initialMode = activeFile ? (modeMap[activeFile.language] || "javascript") : "javascript";
+
       editorRef.current = CodeMirror.fromTextArea(
         document.getElementById('realtimeEditor'),
         {
-          mode: "javascript",
+          mode: initialMode,
           theme: "dracula",
           lineNumbers: true,
           autoCloseTags: true,
           autoCloseBrackets: true,
         }
       );
+
+      // Set initial value
+      if (activeFile) {
+        editorRef.current.setValue(activeFile.content || '');
+        editorRef.current.clearHistory();
+      }
 
       editorRef.current.on("change", (instance, changes) => {
         const { origin } = changes;
@@ -39,6 +58,7 @@ export default function Editor({ language, socketRef, roomId, onCodeChange, onCu
           if (!isPrivate && socketRef.current) {
             socketRef.current.emit(ACTIONS.CODE_CHANGE, {
               roomId,
+              filename: activeFileRef.current?.filename || 'main.js',
               code,
             });
           }
@@ -55,7 +75,27 @@ export default function Editor({ language, socketRef, roomId, onCodeChange, onCu
     }
   }, []);
 
-  // 2. Listen for Socket Changes (Separated to ensure it attaches)
+  // 2. Handle switching files or remote content changes
+  useEffect(() => {
+    if (editorRef.current && activeFile) {
+      const currentVal = editorRef.current.getValue();
+      if (currentVal !== activeFile.content) {
+        const cursor = editorRef.current.getCursor();
+        editorRef.current.setValue(activeFile.content || '');
+        editorRef.current.setCursor(cursor);
+        editorRef.current.clearHistory();
+      }
+
+      const modeMap = {
+        javascript: "javascript",
+        java: "text/x-java",
+        python: "python"
+      };
+      editorRef.current.setOption("mode", modeMap[activeFile.language] || "javascript");
+    }
+  }, [activeFile?.filename, activeFile?.language]);
+
+  // 3. Listen for Socket Changes (Separated to ensure it attaches)
   const remoteCursors = useRef({});
 
   useEffect(() => {
@@ -63,10 +103,15 @@ export default function Editor({ language, socketRef, roomId, onCodeChange, onCu
     const socket = socketRef.current;
     if (!socket) return;
 
-    const handleCodeChange = ({ code }) => {
-      if (code !== null && editorRef.current) {
-        // We use setValue, and the 'origin' check above prevents infinite loops
-        editorRef.current.setValue(code);
+    const handleCodeChange = ({ filename, code }) => {
+      // ONLY update the editor if the change corresponds to the currently active file
+      if (filename === activeFileRef.current?.filename && editorRef.current) {
+        const currentVal = editorRef.current.getValue();
+        if (currentVal !== code) {
+          const cursor = editorRef.current.getCursor();
+          editorRef.current.setValue(code || '');
+          editorRef.current.setCursor(cursor);
+        }
       }
     };
 
@@ -100,22 +145,7 @@ export default function Editor({ language, socketRef, roomId, onCodeChange, onCu
       // Clean up bookmarks
       Object.values(remoteCursors.current).forEach(bm => bm.clear());
     };
-  }, [socketRef.current, isPrivate]);  // Dependency on the actual socket instance and isPrivate
-
-  // 3. Update Language Mode
-  useEffect(() => {
-    if (editorRef.current) {
-      // Use a more flexible way to set modes
-      const modeMap = {
-        javascript: "javascript",
-        java: "text/x-java",
-        python: "python"
-      };
-
-      editorRef.current.setOption("mode", modeMap[language] || "javascript");
-    };
-
-  }, [language]);
+  }, [socketRef.current, isPrivate]);
 
   return <textarea id="realtimeEditor"></textarea>;
 }
