@@ -99,6 +99,12 @@ const languageIdMap = {
   python: 71,
 };
 
+const DEFAULT_STARTER_CODE = {
+  javascript: `// Write your code here\nconsole.log("Hello, PairCode!");\n`,
+  python: `# Write your code here\nprint("Hello, PairCode!")\n`,
+  java: `// Write your code here\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, PairCode!");\n    }\n}\n`,
+};
+
 io.on('connection', (socket) => {
   console.log("✅ Socket connected:", socket.id);
 
@@ -120,7 +126,7 @@ io.on('connection', (socket) => {
       if (!room) {
         room = new Room({
           roomId,
-          files: [{ filename: 'main.js', language: 'javascript', content: '' }],
+          files: [{ filename: 'main.js', language: 'javascript', content: DEFAULT_STARTER_CODE.javascript }],
           activeFile: 'main.js'
         });
         await room.save();
@@ -147,13 +153,14 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('file:create', async ({ roomId, filename, language }) => {
+  socket.on('file:create', async ({ roomId, filename, language, content }) => {
     try {
       const room = await Room.findOne({ roomId });
       if (room) {
         const exists = room.files.some(f => f.filename === filename);
         if (!exists) {
-          room.files.push({ filename, language, content: '' });
+          const starterContent = content !== undefined ? content : (DEFAULT_STARTER_CODE[language] || '// Write your code here\n');
+          room.files.push({ filename, language, content: starterContent });
           room.activeFile = filename;
           await room.save();
           io.to(roomId).emit('room:sync', { files: room.files, activeFile: room.activeFile, name: room.name, isPrivate: room.isPrivate });
