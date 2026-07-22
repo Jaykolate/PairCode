@@ -14,6 +14,12 @@ import '../EditorLayout.css';
 
 const LANG_VERSION = { javascript: 63, java: 62, python: 71 };
 
+const DEFAULT_STARTER_CODE = {
+  javascript: `// Write your code here\nconsole.log("Hello, PairCode!");\n`,
+  python: `# Write your code here\nprint("Hello, PairCode!")\n`,
+  java: `// Write your code here\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, PairCode!");\n    }\n}\n`,
+};
+
 export default function EditorPage() {
   const navigate = useNavigate();
   const { roomId } = useParams();
@@ -22,7 +28,7 @@ export default function EditorPage() {
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const socketRef = useRef(null);
-  const codeRef = useRef('');
+  const codeRef = useRef(DEFAULT_STARTER_CODE.javascript);
 
   const [language, setLanguage] = useState('javascript');
   const [clients, setClients] = useState([]);
@@ -39,7 +45,9 @@ export default function EditorPage() {
   const emitTimeoutRef = useRef(null);
 
   // Multi-file state
-  const [files, setFiles] = useState([{ filename: 'main.js', language: 'javascript', content: '' }]);
+  const [files, setFiles] = useState([
+    { filename: 'main.js', language: 'javascript', content: DEFAULT_STARTER_CODE.javascript }
+  ]);
   const [activeFile, setActiveFile] = useState('main.js');
 
   // Settings & Room Info state
@@ -188,13 +196,15 @@ export default function EditorPage() {
     if (ext === 'py') lang = 'python';
     else if (ext === 'java') lang = 'java';
 
+    const starterCode = DEFAULT_STARTER_CODE[lang] || '// Write your code here\n';
+
     // Optimistically update locally
-    setFiles(prev => [...prev, { filename, language: lang, content: '' }]);
+    setFiles(prev => [...prev, { filename, language: lang, content: starterCode }]);
     setActiveFile(filename);
     setLanguage(lang);
-    codeRef.current = '';
+    codeRef.current = starterCode;
 
-    socketRef.current?.emit('file:create', { roomId, filename, language: lang });
+    socketRef.current?.emit('file:create', { roomId, filename, language: lang, content: starterCode });
   };
 
   const handleDeleteFile = (filename) => {
@@ -281,10 +291,16 @@ export default function EditorPage() {
       const baseName = dotIndex !== -1 ? activeFile.substring(0, dotIndex) : activeFile;
       const newFilename = `${baseName}.${targetExt}`;
       
-      setFiles(prev => prev.map(f => f.filename === activeFile ? { ...f, filename: newFilename, language: l } : f));
+      const currentFileObj = files.find(f => f.filename === activeFile);
+      const isContentEmptyOrStarter = !currentFileObj?.content || Object.values(DEFAULT_STARTER_CODE).some(sc => sc.trim() === (currentFileObj?.content || '').trim());
+      const newContent = isContentEmptyOrStarter ? (DEFAULT_STARTER_CODE[l] || '// Write your code here\n') : currentFileObj.content;
+
+      setFiles(prev => prev.map(f => f.filename === activeFile ? { ...f, filename: newFilename, language: l, content: newContent } : f));
       setActiveFile(newFilename);
+      codeRef.current = newContent;
       
       socketRef.current?.emit('file:rename', { roomId, oldFilename: activeFile, newFilename, language: l });
+      socketRef.current?.emit(ACTIONS.CODE_CHANGE, { roomId, filename: newFilename, code: newContent });
     }
   };
 
@@ -330,8 +346,6 @@ export default function EditorPage() {
       setIsReviewLoad(false);
     }
   };
-
-  const shortRoom = roomId ? roomId.substring(0, 8) + '…' : '—';
 
   return (
     <div className="ep">
